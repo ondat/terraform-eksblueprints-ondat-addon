@@ -44,19 +44,6 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-# FIXME: Sort userdata or remove
-#data "aws_ssm_parameter" "bottlerocket_latest" {
-#  name = "/aws/service/bottlerocket/aws-k8s-${local.cluster_version}/x86_64/latest/image_id"
-#}
-
-#data "aws_ami" "bottlerocket" {
-#  owners = ["amazon"]
-#  filter {
-#    name   = "image-id"
-#    values = [data.aws_ssm_parameter.bottlerocket_latest.value]
-#  }
-#}
-
 data "aws_subnet" "one" {
   id = module.aws_vpc.private_subnets[0]
 }
@@ -161,10 +148,6 @@ module "etcd" {
   source     = "github.com/ondat/etcd3-terraform"
   vpc_id     = module.aws_vpc.vpc_id
   subnet_ids = module.aws_vpc.private_subnets
-
-  # FIXME: temp
-  ssh_cidrs           = ["0.0.0.0/0"]
-  key_pair_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC+ukLdiShM5cd97DOumzSWqUn/zY7ZJ3G77Ou7T2mUK+moUgalbc63+KGvdiW/tm/LIv0euVJxDDh8MOp1ivZSfZ3fvDg9cFLKYk1Tbgq9Gr7r2ZCX8oLxdJaeWJLYvFS+FPd7S3XLpwe4f1UR7kRnJYAdUVZqKP1bc1h+uIQ+V6EmfCO6AIovQf97BAO8/qS3PP+Nu7QWTIZatQXmCCGcQPwXnFxd6+1er0Z1azj3u2+OFP9EYMgMdpCuKTAFkUCo32U0t7Zv3pbvZl2FNzOgv231wuDOFC2bbTug6jynGXm2t+f9Bmrk7RIRX0I92pX8KS8amylMN9ous6741w/Z3rNjiB+WhB6wYZCdrwnKqADd8Wxg2OEUzlCUAwna1XSToJ0gE8qAwQn2fYdylMGmTLWfcdA1GOxvj2hNZMqNGdX6yt/3x8j+2pQ3h9TbqpANHuION+/ZXfhS3Gb6hp2XUGEqaVGNHzan0/OJRPtDbG93+1qDUhkyUPyYFL+GBz8= calum@Calums-MacBook-Pro.local"
 
   ssd_size      = 32
   instance_type = "t3.large"
