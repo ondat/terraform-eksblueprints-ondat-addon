@@ -1,0 +1,11 @@
+serviceAccount:
+  create: false
+  name: ${service_account_name}
+cluster:
+  create: true
+  secretRefName: ${credential_secret_name}
+  admin:
+    username: ${admin_username}
+    password: ${admin_password}
+  kvBackend:
+    address: ${etcd_address}
