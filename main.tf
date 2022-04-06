@@ -9,7 +9,7 @@ resource "kubernetes_namespace" "storageos" {
 
 
 module "helm_addon" {
-  source               = "github.com/aws-samples/aws-eks-accelerator-for-terraform//modules/kubernetes-addons/helm-addon"
+  source               = "github.com/aws-samples/aws-eks-accelerator-for-terraform//modules/kubernetes-addons/helm-addon?ref=v4.0.1"
   manage_via_gitops    = var.manage_via_gitops
   set_values           = local.set_values
   set_sensitive_values = local.set_sensitive_values

@@ -162,7 +162,7 @@ module "etcd" {
 # Example to consume aws-eks-accelerator-for-terraform module
 #---------------------------------------------------------------
 module "aws-eks-accelerator-for-terraform" {
-  source            = "github.com/cvlc/aws-eks-accelerator-for-terraform?ref=ondat"
+  source            = "github.com/aws-samples/aws-eks-accelerator-for-terraform"
   tenant            = local.tenant
   environment       = local.environment
   zone              = local.zone
