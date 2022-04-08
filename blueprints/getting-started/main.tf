@@ -159,10 +159,10 @@ module "etcd" {
 }
 
 #---------------------------------------------------------------
-# Example to consume aws-eks-accelerator-for-terraform module
+# Example to consume eks-blueprints module
 #---------------------------------------------------------------
-module "aws-eks-accelerator-for-terraform" {
-  source            = "github.com/aws-samples/aws-eks-accelerator-for-terraform"
+module "eks-blueprints" {
+  source            = "github.com/aws-ia/terraform-aws-eks-blueprints"
   tenant            = local.tenant
   environment       = local.environment
   zone              = local.zone
@@ -301,8 +301,8 @@ module "persist-ebs" {
   }
 }
 
-module "kubernetes-addons" {
-  source = "github.com/cvlc/aws-eks-accelerator-for-terraform//modules/kubernetes-addons?ref=ondat"
+module "eks-blueprints-kubernetes-addons" {
+  source = "github.com/cvlc/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=onda"
 
   eks_cluster_id = module.aws-eks-accelerator-for-terraform.eks_cluster_id
 
