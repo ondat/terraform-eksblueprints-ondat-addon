@@ -134,10 +134,10 @@ scripts via our [self-evaluation guide](https://docs.ondat.io/docs/self-eval/#de
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_aws-eks-accelerator-for-terraform"></a> [aws-eks-accelerator-for-terraform](#module\_aws-eks-accelerator-for-terraform) | ../../ | n/a |
+| <a name="module_terraform-aws-eks-blueprints"></a> [terraform-aws-eks-blueprints](#module\_terraform-aws-eks-blueprints) | github.com/aws-ia/terraform-aws-eks-blueprints | n/a |
 | <a name="module_aws_vpc"></a> [aws\_vpc](#module\_aws\_vpc) | terraform-aws-modules/vpc/aws | v3.2.0 |
 | <a name="module_etcd"></a> [etcd](#module\_etcd) | github.com/ondat/etcd3-terraform | n/a |
-| <a name="module_kubernetes-addons"></a> [kubernetes-addons](#module\_kubernetes-addons) | ../../modules/kubernetes-addons | n/a |
+| <a name="module_kubernetes-addons"></a> [kubernetes-addons](#module\_kubernetes-addons) | github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons | n/a |
 | <a name="module_persist-ebs"></a> [persist-ebs](#module\_persist-ebs) | github.com/ondat/etcd3-bootstrap/terraform/modules/attached_ebs | n/a |
 
 ### Resources
