@@ -55,11 +55,11 @@ data "aws_subnet" "three" {
 }
 
 data "aws_eks_cluster" "cluster" {
-  name = module.aws-eks-accelerator-for-terraform.eks_cluster_id
+  name = module.eks-blueprints.eks_cluster_id
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = module.aws-eks-accelerator-for-terraform.eks_cluster_id
+  name = module.eks-blueprints.eks_cluster_id
 }
 
 provider "aws" {
@@ -159,10 +159,10 @@ module "etcd" {
 }
 
 #---------------------------------------------------------------
-# Example to consume aws-eks-accelerator-for-terraform module
+# Example to consume eks-blueprints module
 #---------------------------------------------------------------
-module "aws-eks-accelerator-for-terraform" {
-  source            = "github.com/aws-samples/aws-eks-accelerator-for-terraform"
+module "eks-blueprints" {
+  source            = "github.com/aws-ia/terraform-aws-eks-blueprints"
   tenant            = local.tenant
   environment       = local.environment
   zone              = local.zone
@@ -301,10 +301,10 @@ module "persist-ebs" {
   }
 }
 
-module "kubernetes-addons" {
-  source = "github.com/cvlc/aws-eks-accelerator-for-terraform//modules/kubernetes-addons?ref=ondat"
+module "eks-blueprints-kubernetes-addons" {
+  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons"
 
-  eks_cluster_id = module.aws-eks-accelerator-for-terraform.eks_cluster_id
+  eks_cluster_id = module.eks-blueprints.eks_cluster_id
 
   # EKS Addons
   enable_ondat = true # default is false
@@ -316,5 +316,5 @@ module "kubernetes-addons" {
   ondat_admin_username = "storageos"
   ondat_admin_password = "storageos"
 
-  depends_on = [module.aws-eks-accelerator-for-terraform.managed_node_groups]
+  depends_on = [module.eks-blueprints.managed_node_groups]
 }
