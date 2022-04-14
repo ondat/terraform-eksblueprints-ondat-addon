@@ -49,7 +49,7 @@ locals {
     name                       = local.name
     chart                      = "ondat-operator"
     repository                 = "https://ondat.github.io/charts"
-    version                    = "0.5.5"
+    version                    = "0.5.6"
     namespace                  = local.namespace
     timeout                    = "1500"
     create_namespace           = true
