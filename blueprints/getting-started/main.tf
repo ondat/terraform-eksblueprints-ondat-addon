@@ -170,7 +170,7 @@ module "etcd" {
 # Example to consume eks-blueprints module
 #---------------------------------------------------------------
 module "eks-blueprints" {
-  source            = "github.com/aws-ia/terraform-aws-eks-blueprints"
+  source            = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=faf2f9"
   tenant            = local.tenant
   environment       = local.environment
   zone              = local.zone
@@ -310,7 +310,7 @@ module "persist-ebs" {
 }
 
 module "eks-blueprints-kubernetes-addons" {
-  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons"
+  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=faf2f9"
 
   eks_cluster_id = module.eks-blueprints.eks_cluster_id
 
