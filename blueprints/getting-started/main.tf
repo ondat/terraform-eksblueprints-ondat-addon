@@ -110,7 +110,7 @@ resource "aws_iam_policy" "data" {
 
 resource "aws_security_group" "etcd_access" {
   name        = join("-", [local.iam_policy_name, "etcd-access"])
-  description = "Allow access to etcd from clients"
+  description = "Allow access to etcd and between Ondat clients"
   vpc_id      = module.aws_vpc.vpc_id
 }
 
