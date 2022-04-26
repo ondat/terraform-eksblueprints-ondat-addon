@@ -72,7 +72,7 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
   token                  = data.aws_eks_cluster_auth.cluster.token
 }
-  
+
 provider "helm" {
   kubernetes {
     host                   = data.aws_eks_cluster.cluster.endpoint
@@ -112,6 +112,69 @@ resource "aws_security_group" "etcd_access" {
   name        = join("-", [local.iam_policy_name, "etcd-access"])
   description = "Allow access to etcd from clients"
   vpc_id      = module.aws_vpc.vpc_id
+}
+
+resource "aws_security_group_rule" "ondat_access_tcp" {
+  type              = "egress"
+  from_port         = 1024
+  to_port           = 65535
+  protocol          = "tcp"
+  self              = true
+  security_group_id = aws_security_group.etcd_access.id
+}
+
+resource "aws_security_group_rule" "ondat_access_udp" {
+  type              = "egress"
+  from_port         = 1024
+  to_port           = 65535
+  protocol          = "udp"
+  self              = true
+  security_group_id = aws_security_group.etcd_access.id
+}
+
+resource "aws_security_group_rule" "ondat_api_tcp" {
+  type              = "ingress"
+  from_port         = 5703
+  to_port           = 5705
+  protocol          = "tcp"
+  self              = true
+  security_group_id = aws_security_group.etcd_access.id
+}
+
+resource "aws_security_group_rule" "ondat_rwx_tcp" {
+  type              = "ingress"
+  from_port         = 25695
+  to_port           = 25960
+  protocol          = "tcp"
+  self              = true
+  security_group_id = aws_security_group.etcd_access.id
+}
+
+resource "aws_security_group_rule" "ondat_grpc_tcp" {
+  type              = "ingress"
+  from_port         = 5701
+  to_port           = 5701
+  protocol          = "tcp"
+  self              = true
+  security_group_id = aws_security_group.etcd_access.id
+}
+
+resource "aws_security_group_rule" "ondat_gossip_tcp" {
+  type              = "ingress"
+  from_port         = 5711
+  to_port           = 5711
+  protocol          = "tcp"
+  self              = true
+  security_group_id = aws_security_group.etcd_access.id
+}
+
+resource "aws_security_group_rule" "ondat_gossip_udp" {
+  type              = "ingress"
+  from_port         = 5711
+  to_port           = 5711
+  protocol          = "udp"
+  self              = true
+  security_group_id = aws_security_group.etcd_access.id
 }
 
 resource "aws_security_group_rule" "etcd_access" {
