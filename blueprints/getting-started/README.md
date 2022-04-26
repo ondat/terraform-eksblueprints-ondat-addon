@@ -105,7 +105,8 @@ terraform destroy
 
 By default, an unlicensed Ondat cluster will allow for 50GB of
 provisioned capacity. To download and install a free, personal
-license for 3 nodes and 1TiB of provisioned capacity,
+license for 3 nodes and 1TiB of provisioned capacity or an 
+unrestricted trial license,
 [follow the instructions in Ondat's documentation](https://docs.ondat.io/docs/operations/licensing/#ondat-cli---running-the-cli).
 
 ### Self-evaluation
