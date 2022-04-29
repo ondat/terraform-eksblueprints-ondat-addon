@@ -161,7 +161,7 @@ resource "aws_security_group_rule" "ondat_grpc_tcp" {
 
 resource "aws_security_group_rule" "ondat_gossip_tcp" {
   type              = "ingress"
-  from_port         = 5711
+  from_port         = 5710
   to_port           = 5711
   protocol          = "tcp"
   self              = true
@@ -170,7 +170,7 @@ resource "aws_security_group_rule" "ondat_gossip_tcp" {
 
 resource "aws_security_group_rule" "ondat_gossip_udp" {
   type              = "ingress"
-  from_port         = 5711
+  from_port         = 5710
   to_port           = 5711
   protocol          = "udp"
   self              = true
