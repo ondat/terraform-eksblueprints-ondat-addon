@@ -105,7 +105,7 @@ terraform destroy
 
 By default, an unlicensed Ondat cluster will allow for 50GB of
 provisioned capacity. To download and install a free, personal
-license for 3 nodes and 1TiB of provisioned capacity or an 
+license for 3 nodes and 1TiB of provisioned capacity or an
 unrestricted trial license,
 [follow the instructions in Ondat's documentation](https://docs.ondat.io/docs/operations/licensing/#ondat-cli---running-the-cli).
 
@@ -135,10 +135,10 @@ scripts via our [self-evaluation guide](https://docs.ondat.io/docs/self-eval/#de
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_terraform-aws-eks-blueprints"></a> [terraform-aws-eks-blueprints](#module\_terraform-aws-eks-blueprints) | github.com/aws-ia/terraform-aws-eks-blueprints | n/a |
+| <a name="module_terraform-aws-eks-blueprints"></a> [terraform-aws-eks-blueprints](#module\_terraform-aws-eks-blueprints) | github.com/aws-ia/terraform-aws-eks-blueprints | `v4.0.6` |
 | <a name="module_aws_vpc"></a> [aws\_vpc](#module\_aws\_vpc) | terraform-aws-modules/vpc/aws | v3.2.0 |
 | <a name="module_etcd"></a> [etcd](#module\_etcd) | github.com/ondat/etcd3-terraform | n/a |
-| <a name="module_kubernetes-addons"></a> [kubernetes-addons](#module\_kubernetes-addons) | github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons | n/a |
+| <a name="module_kubernetes-addons"></a> [kubernetes-addons](#module\_kubernetes-addons) | github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons | `v4.0.6` |
 | <a name="module_persist-ebs"></a> [persist-ebs](#module\_persist-ebs) | github.com/ondat/etcd3-bootstrap/terraform/modules/attached_ebs | n/a |
 
 ### Resources

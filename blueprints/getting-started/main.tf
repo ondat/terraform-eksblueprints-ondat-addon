@@ -233,7 +233,7 @@ module "etcd" {
 # Example to consume eks-blueprints module
 #---------------------------------------------------------------
 module "eks-blueprints" {
-  source            = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=faf2f9"
+  source            = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.0.6"
   tenant            = local.tenant
   environment       = local.environment
   zone              = local.zone
@@ -255,6 +255,7 @@ module "eks-blueprints" {
       custom_ami_id           = data.aws_ami.ubuntu.id
       pre_userdata            = local.userdata_one
       additional_iam_policies = local.iam_policies
+      format_mount_nvme_disk  = false
       node_group_name         = "managed-ondat-ondemand-1"
       additional_tags         = { Group = join("-", [local.tenant, local.environment, local.zone, "ondat"]) }
       subnet_ids              = [data.aws_subnet.one.id]
@@ -274,6 +275,7 @@ module "eks-blueprints" {
       custom_ami_id           = data.aws_ami.ubuntu.id
       pre_userdata            = local.userdata_two
       additional_iam_policies = local.iam_policies
+      format_mount_nvme_disk  = false
       node_group_name         = "managed-ondat-ondemand-2"
       additional_tags         = { Group = join("-", [local.tenant, local.environment, local.zone, "ondat"]) }
       subnet_ids              = [data.aws_subnet.two.id]
@@ -293,6 +295,7 @@ module "eks-blueprints" {
       custom_ami_id           = data.aws_ami.ubuntu.id
       pre_userdata            = local.userdata_three
       additional_iam_policies = local.iam_policies
+      format_mount_nvme_disk  = false
       node_group_name         = "managed-ondat-ondemand-3"
       additional_tags         = { Group = join("-", [local.tenant, local.environment, local.zone, "ondat"]) }
       subnet_ids              = [data.aws_subnet.three.id]
@@ -373,7 +376,7 @@ module "persist-ebs" {
 }
 
 module "eks-blueprints-kubernetes-addons" {
-  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=faf2f9"
+  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=v4.0.6"
 
   eks_cluster_id = module.eks-blueprints.eks_cluster_id
 
