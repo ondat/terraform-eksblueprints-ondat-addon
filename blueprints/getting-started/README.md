@@ -60,21 +60,17 @@ export KUBE_CONFIG_FILE=~/.kube/config
 terraform plan
 ```
 
-1. Apply the deployment with Terraform - note that you may need to first apply the
-IAM policy for data nodes as other resources depend on it:
+1. Review the plan and apply the deployment with Terraform:
 
 ```shell
-terraform apply -target=aws_iam_policy.data
 terraform apply
 ```
 
-1. The process may fail to connect to Kubernetes when it's time to deploy Ondat,
-use the AWS CLI to provision a kubeconfig profile for the cluster:
+1. Use the AWS CLI to provision a kubeconfig profile for the cluster:
 
 ```shell
-terraform output # This command will output the command below
+# The terraform output command can also be used to retrieve this
 aws eks --region $AWS_REGION update-kubeconfig --name $CLUSTER_NAME
-terraform apply
 ```
 
 1. Check that the nodes have created and that Ondat is running:
@@ -93,11 +89,14 @@ You should see a `storageos-node` pod running on each node.
 
 ### Uninstall
 
-1. To uninstall, destroy with Terraform - note that this will **delete all data**.
+1. To uninstall, destroy with Terraform - note that this will **permanently delete the cluster and all data**.
 
 ```shell
 terraform destroy
 ```
+
+1. If you have been running the cluster for longer than 24 hours, you may also want to login via the AWS
+console or CLI and manually delete any remaining EBS snapshots. 
 
 ## Operations
 
