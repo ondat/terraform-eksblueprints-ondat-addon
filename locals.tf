@@ -3,34 +3,42 @@ terraform {
 }
 locals {
   name                 = "ondat"
-  namespace            = "storageos"
+  namespace            = "ondat"
   service_account_name = "storageos-operator"
   eks_cluster_id       = var.addon_context.eks_cluster_id
 
+  ondat_etcd_endpoints            = length(var.etcd_endpoints) == 0 ? "storageos-etcd.storageos-etcd:2379" : join(",", var.etcd_endpoints)
+  ondat_etcd_tls_secret           = length(kubernetes_secret.etcd) > 0 ? kubernetes_secret.etcd.0.metadata.0.name : "storageos-etcd-secret"
+  ondat_etcd_tls_secret_namespace = length(kubernetes_secret.etcd) > 0 ? kubernetes_secret.etcd.0.metadata.0.namespace : "storageos"
+
   set_values = concat([
     {
-      name  = "serviceAccount.name"
+      name  = "ondat-operator.serviceAccount.name"
       value = local.service_account_name
     },
     {
-      name  = "cluster.create"
+      name  = "ondat-operator.cluster.create"
       value = var.create_cluster
     },
     {
-      name  = "cluster.secretRefName"
+      name  = "ondat-operator.cluster.secretRefName"
       value = "storageos-api"
     },
     {
-      name  = "cluster.kvBackend.address"
-      value = join(",", var.etcd_endpoints)
+      name  = "ondat-operator.cluster.kvBackend.address"
+      value = local.ondat_etcd_endpoints
     },
     {
-      name  = "cluster.kvBackend.tlsSecretName"
-      value = var.create_cluster ? kubernetes_secret.etcd.0.metadata.0.name : ""
+      name  = "ondat-operator.cluster.kvBackend.tlsSecretName"
+      value = local.ondat_etcd_tls_secret
     },
     {
-      name  = "cluster.kvBackend.tlsSecretNamespace"
-      value = var.create_cluster ? kubernetes_secret.etcd.0.metadata.0.namespace : ""
+      name  = "ondat-operator.cluster.kvBackend.tlsSecretNamespace"
+      value = local.ondat_etcd_tls_secret_namespace
+    },
+    {
+      name  = "etcd-cluster-operator.cluster.create"
+      value = length(var.etcd_endpoints) == 0 ? true : false
     },
   ])
 
@@ -47,12 +55,12 @@ locals {
 
   default_helm_config = {
     name                       = local.name
-    chart                      = "ondat-operator"
+    chart                      = "ondat"
     repository                 = "https://ondat.github.io/charts"
-    version                    = "0.5.6"
+    version                    = "0.0.3"
     namespace                  = local.namespace
     timeout                    = "1500"
-    create_namespace           = true
+    create_namespace           = false
     values                     = local.default_helm_values
     set                        = []
     set_sensitive              = null
@@ -100,27 +108,33 @@ locals {
     irsa_iam_permissions_boundary     = var.irsa_permissions_boundary
   }
 
-
-  default_helm_values = [templatefile("${path.module}/values.yaml", {
-    service_account_name   = local.service_account_name,
-    namespace              = local.namespace,
-    admin_username         = "storageos",
-    admin_password         = "storageos",
-    credential_secret_name = "storageos-api",
-    etcd_address           = "https://storageos-etcd.storageos.svc.cluster.local:2379",
-    },
-  )]
-
   argocd_gitops_config = {
     enable                             = true
+    etcdClusterCreate                  = length(var.etcd_endpoints) == 0 ? true : false
     serviceAccountName                 = local.service_account_name
     clusterSecretRefName               = "storageos-api"
     clusterAdminUsername               = "storageos"
     clusterAdminPassword               = "storageos"
-    clusterKvBackendAddress            = join(",", var.etcd_endpoints)
-    clusterKvBackendTLSSecretName      = var.create_cluster ? kubernetes_secret.etcd.0.metadata.0.name : ""
-    clusterKvBackendTLSSecretNamespace = var.create_cluster ? kubernetes_secret.etcd.0.metadata.0.namespace : ""
+    clusterKvBackendAddress            = local.ondat_etcd_endpoints
+    clusterKvBackendTLSSecretName      = length(kubernetes_secret.etcd) > 0 ? kubernetes_secret.etcd.0.metadata.0.name : "storageos-etcd-secret"
+    clusterKvBackendTLSSecretNamespace = length(kubernetes_secret.etcd) > 0 ? kubernetes_secret.etcd.0.metadata.0.namespace : "storageos"
     clusterNodeSelectorTermKey         = "storageos-node"
     clusterNodeSelectorTermValue       = "1"
+    etcdNodeSelectorTermKey            = "storageos-etcd"
+    etcdNodeSelectorTermValue          = "1"
   }
+
+  default_helm_values = [templatefile("${path.module}/values.yaml", {
+    ondat_service_account_name   = local.service_account_name,
+    namespace                    = local.namespace,
+    ondat_nodeselectorterm_key   = "storageos-node"
+    ondat_nodeselectorterm_value = "1"
+    etcd_nodeselectorterm_key    = "storageos-etcd"
+    etcd_nodeselectorterm_value  = "1"
+    ondat_admin_username         = "storageos",
+    ondat_admin_password         = "storageos",
+    ondat_credential_secret_name = "storageos-api",
+    etcd_address                 = local.ondat_etcd_endpoints,
+    },
+  )]
 }

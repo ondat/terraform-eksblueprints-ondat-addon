@@ -47,25 +47,25 @@ variable "create_cluster" {
 
 variable "etcd_endpoints" {
   type        = list(string)
-  default     = ["https://storageos-etcd.storageos.svc.cluster.local:2379"]
+  default     = []
   description = "A list of etcd endpoints for Ondat"
 }
 
 variable "etcd_ca" {
   type        = string
-  default     = ""
+  default     = null
   description = "The PEM encoded CA for Ondat's etcd"
 }
 
 variable "etcd_cert" {
   type        = string
-  default     = ""
+  default     = null
   description = "The PEM encoded client certificate for Ondat's etcd"
 }
 
 variable "etcd_key" {
   type        = string
-  default     = ""
+  default     = null
   sensitive   = true
   description = "The PEM encoded client key for Ondat's etcd"
 }
