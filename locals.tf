@@ -57,7 +57,7 @@ locals {
     name                       = local.name
     chart                      = "ondat"
     repository                 = "https://ondat.github.io/charts"
-    version                    = "0.0.3"
+    version                    = "0.0.4"
     namespace                  = local.namespace
     timeout                    = "1500"
     create_namespace           = false
