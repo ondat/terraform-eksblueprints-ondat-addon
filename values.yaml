@@ -11,8 +11,8 @@ ondat-operator:
     kvBackend:
       address: ${etcd_address}
     nodeSelectorTerm:
-      key: ${ondat_nodeselectortermkey}
-      value: ${ondat_nodeselectortermvalue}
+      key: ${ondat_nodeselectorterm_key}
+      value: ${ondat_nodeselectorterm_value}
 etcd-cluster-operator:
   cluster:
     replicas: 5
