@@ -1,10 +1,20 @@
+resource "kubernetes_namespace" "storageos" {
+  count = length(var.etcd_endpoints) == 0 ? 0 : 1
+  metadata {
+    name = "storageos"
+    labels = {
+      app = local.namespace
+    }
+  }
+}
+
 resource "kubernetes_secret" "etcd" {
-  count = var.create_cluster ? 1 : 0
+  count = length(var.etcd_endpoints) == 0 ? 0 : 1
   metadata {
     name      = "storageos-etcd"
-    namespace = local.namespace
+    namespace = "storageos"
     labels = {
-      app = "storageos"
+      app = local.namespace
     }
   }
 

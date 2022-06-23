@@ -275,7 +275,7 @@ module "eks_blueprints" {
       additional_tags         = { Group = join("-", [local.name, "ondat", "1"]) }
       subnet_ids              = [data.aws_subnet.one.id]
       ami_type                = "CUSTOM"
-      instance_types          = ["t3.large"]
+      instance_types          = ["i3en.large"]
       desired_size            = 1
       max_size                = 1
       min_size                = 1
@@ -296,7 +296,7 @@ module "eks_blueprints" {
       additional_tags         = { Group = join("-", [local.name, "ondat", "2"]) }
       subnet_ids              = [data.aws_subnet.two.id]
       ami_type                = "CUSTOM"
-      instance_types          = ["t3.large"]
+      instance_types          = ["i3en.large"]
       desired_size            = 1
       max_size                = 1
       min_size                = 1
@@ -317,7 +317,7 @@ module "eks_blueprints" {
       additional_tags         = { Group = join("-", [local.name, "ondat", "3"]) }
       subnet_ids              = [data.aws_subnet.three.id]
       ami_type                = "CUSTOM"
-      instance_types          = ["t3.large"]
+      instance_types          = ["i3en.large"]
       desired_size            = 1
       max_size                = 1
       min_size                = 1
@@ -338,7 +338,7 @@ module "eks_blueprints" {
       additional_tags         = { Group = join("-", [local.name, "ondat", "4"]) }
       subnet_ids              = [data.aws_subnet.two.id]
       ami_type                = "CUSTOM"
-      instance_types          = ["t3.large"]
+      instance_types          = ["i3en.large"]
       desired_size            = 1
       max_size                = 1
       min_size                = 1
@@ -359,7 +359,7 @@ module "eks_blueprints" {
       additional_tags         = { Group = join("-", [local.name, "ondat", "5"]) }
       subnet_ids              = [data.aws_subnet.three.id]
       ami_type                = "CUSTOM"
-      instance_types          = ["t3.large"]
+      instance_types          = ["i3en.large"]
       desired_size            = 1
       max_size                = 1
       min_size                = 1
@@ -386,16 +386,13 @@ module "attached_ebs_one" {
       encrypted               = true
       volume_type             = "gp3"
       block_device_aws        = "/dev/xvdf"
-      block_device_os         = "/dev/nvme1n1"
+      block_device_os         = "/dev/nvme2n1"
       block_device_mount_path = "/var/lib/storageos"
     }
     "storageos-data-ondat-1" = {
-      size                    = 100
       availability_zone       = data.aws_subnet.one.availability_zone
-      encrypted               = true
-      volume_type             = "gp3"
-      block_device_aws        = "/dev/xvdg"
-      block_device_os         = "/dev/nvme2n1"
+      ephemeral               = true
+      block_device_os         = "/dev/nvme1n1"
       block_device_mount_path = "/var/lib/storageos/data/dev1"
     }
   }
@@ -411,16 +408,13 @@ module "attached_ebs_two" {
       encrypted               = true
       volume_type             = "gp3"
       block_device_aws        = "/dev/xvdf"
-      block_device_os         = "/dev/nvme1n1"
+      block_device_os         = "/dev/nvme2n1"
       block_device_mount_path = "/var/lib/storageos"
     }
     "storageos-data-ondat-2" = {
-      size                    = 100
       availability_zone       = data.aws_subnet.two.availability_zone
-      encrypted               = true
-      volume_type             = "gp3"
-      block_device_aws        = "/dev/xvdg"
-      block_device_os         = "/dev/nvme2n1"
+      ephemeral               = true
+      block_device_os         = "/dev/nvme1n1"
       block_device_mount_path = "/var/lib/storageos/data/dev1"
     }
   }
@@ -436,16 +430,13 @@ module "attached_ebs_three" {
       encrypted               = true
       volume_type             = "gp3"
       block_device_aws        = "/dev/xvdf"
-      block_device_os         = "/dev/nvme1n1"
+      block_device_os         = "/dev/nvme2n1"
       block_device_mount_path = "/var/lib/storageos"
     }
     "storageos-data-ondat-3" = {
-      size                    = 100
       availability_zone       = data.aws_subnet.three.availability_zone
-      encrypted               = true
-      volume_type             = "gp3"
-      block_device_aws        = "/dev/xvdg"
-      block_device_os         = "/dev/nvme2n1"
+      ephemeral               = true
+      block_device_os         = "/dev/nvme1n1"
       block_device_mount_path = "/var/lib/storageos/data/dev1"
     }
   }
@@ -461,16 +452,13 @@ module "attached_ebs_four" {
       encrypted               = true
       volume_type             = "gp3"
       block_device_aws        = "/dev/xvdf"
-      block_device_os         = "/dev/nvme1n1"
+      block_device_os         = "/dev/nvme2n1"
       block_device_mount_path = "/var/lib/storageos"
     }
     "storageos-data-ondat-4" = {
-      size                    = 100
       availability_zone       = data.aws_subnet.two.availability_zone
-      encrypted               = true
-      volume_type             = "gp3"
-      block_device_aws        = "/dev/xvdg"
-      block_device_os         = "/dev/nvme2n1"
+      ephemeral               = true
+      block_device_os         = "/dev/nvme1n1"
       block_device_mount_path = "/var/lib/storageos/data/dev1"
     }
   }
@@ -486,16 +474,13 @@ module "attached_ebs_five" {
       encrypted               = true
       volume_type             = "gp3"
       block_device_aws        = "/dev/xvdf"
-      block_device_os         = "/dev/nvme1n1"
+      block_device_os         = "/dev/nvme2n1"
       block_device_mount_path = "/var/lib/storageos"
     }
     "storageos-data-ondat-5" = {
-      size                    = 100
       availability_zone       = data.aws_subnet.three.availability_zone
-      encrypted               = true
-      volume_type             = "gp3"
-      block_device_aws        = "/dev/xvdg"
-      block_device_os         = "/dev/nvme2n1"
+      ephemeral               = true
+      block_device_os         = "/dev/nvme1n1"
       block_device_mount_path = "/var/lib/storageos/data/dev1"
     }
   }

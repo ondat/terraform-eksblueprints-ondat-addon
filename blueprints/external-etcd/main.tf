@@ -82,19 +82,13 @@ locals {
   iam_policy_name_one   = join("-", [local.name, "ondat", "data", "1"])
   iam_policy_name_two   = join("-", [local.name, "ondat", "data", "2"])
   iam_policy_name_three = join("-", [local.name, "ondat", "data", "3"])
-  iam_policy_name_four  = join("-", [local.name, "ondat", "data", "4"])
-  iam_policy_name_five  = join("-", [local.name, "ondat", "data", "5"])
   iam_policies_one      = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.iam_policy_name_one}"]
   iam_policies_two      = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.iam_policy_name_two}"]
   iam_policies_three    = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.iam_policy_name_three}"]
-  iam_policies_four     = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.iam_policy_name_four}"]
-  iam_policies_five     = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.iam_policy_name_five}"]
 
   userdata_one   = join("\n", ["#!/bin/bash", module.attached_ebs_one.userdata_snippets_by_az[data.aws_subnet.one.availability_zone]])
   userdata_two   = join("\n", ["#!/bin/bash", module.attached_ebs_two.userdata_snippets_by_az[data.aws_subnet.two.availability_zone]])
   userdata_three = join("\n", ["#!/bin/bash", module.attached_ebs_three.userdata_snippets_by_az[data.aws_subnet.three.availability_zone]])
-  userdata_four  = join("\n", ["#!/bin/bash", module.attached_ebs_four.userdata_snippets_by_az[data.aws_subnet.two.availability_zone]])
-  userdata_five  = join("\n", ["#!/bin/bash", module.attached_ebs_five.userdata_snippets_by_az[data.aws_subnet.three.availability_zone]])
 }
 
 resource "aws_iam_policy" "data1" {
@@ -110,16 +104,6 @@ resource "aws_iam_policy" "data2" {
 resource "aws_iam_policy" "data3" {
   name   = local.iam_policy_name_three
   policy = module.attached_ebs_three.iam_role_policy_document
-}
-
-resource "aws_iam_policy" "data4" {
-  name   = local.iam_policy_name_four
-  policy = module.attached_ebs_four.iam_role_policy_document
-}
-
-resource "aws_iam_policy" "data5" {
-  name   = local.iam_policy_name_five
-  policy = module.attached_ebs_five.iam_role_policy_document
 }
 
 resource "aws_security_group" "ondat_access" {
@@ -147,20 +131,12 @@ resource "aws_security_group_rule" "ondat_access_udp" {
 }
 
 resource "aws_security_group_rule" "ondat_etcd_tcp" {
-  type              = "ingress"
-  from_port         = 2379
-  to_port           = 2380
-  protocol          = "tcp"
-  self              = true
-  security_group_id = aws_security_group.ondat_access.id
-}
-
-resource "aws_security_group_rule" "ondat_etcd_udp" {
-  type              = "ingress"
-  from_port         = 2379
-  to_port           = 2380
-  protocol          = "udp"
-  self              = true
+  type      = "egress"
+  from_port = 2379
+  to_port   = 2379
+  protocol  = "tcp"
+  # Unfortunately, NLBs don't like SG-based rules
+  cidr_blocks       = module.vpc.private_subnets_cidr_blocks
   security_group_id = aws_security_group.ondat_access.id
 }
 
@@ -282,7 +258,6 @@ module "eks_blueprints" {
       max_unavailable         = 1
       k8s_labels = {
         "storageos-node" = "1"
-        "storageos-etcd" = "1"
       }
     }
     ondat_2 = {
@@ -303,7 +278,6 @@ module "eks_blueprints" {
       max_unavailable         = 1
       k8s_labels = {
         "storageos-node" = "1"
-        "storageos-etcd" = "1"
       }
     }
     ondat_3 = {
@@ -324,49 +298,6 @@ module "eks_blueprints" {
       max_unavailable         = 1
       k8s_labels = {
         "storageos-node" = "1"
-        "storageos-etcd" = "1"
-      }
-    }
-    ondat_4 = {
-      block_device_mappings   = []
-      create_launch_template  = true
-      custom_ami_id           = data.aws_ami.ubuntu.id
-      pre_userdata            = local.userdata_four
-      additional_iam_policies = local.iam_policies_four
-      format_mount_nvme_disk  = false
-      node_group_name         = "managed-ondat-ondemand-4"
-      additional_tags         = { Group = join("-", [local.name, "ondat", "4"]) }
-      subnet_ids              = [data.aws_subnet.two.id]
-      ami_type                = "CUSTOM"
-      instance_types          = ["t3.large"]
-      desired_size            = 1
-      max_size                = 1
-      min_size                = 1
-      max_unavailable         = 1
-      k8s_labels = {
-        "storageos-node" = "1"
-        "storageos-etcd" = "1"
-      }
-    }
-    ondat_5 = {
-      block_device_mappings   = []
-      create_launch_template  = true
-      custom_ami_id           = data.aws_ami.ubuntu.id
-      pre_userdata            = local.userdata_five
-      additional_iam_policies = local.iam_policies_five
-      format_mount_nvme_disk  = false
-      node_group_name         = "managed-ondat-ondemand-5"
-      additional_tags         = { Group = join("-", [local.name, "ondat", "5"]) }
-      subnet_ids              = [data.aws_subnet.three.id]
-      ami_type                = "CUSTOM"
-      instance_types          = ["t3.large"]
-      desired_size            = 1
-      max_size                = 1
-      min_size                = 1
-      max_unavailable         = 1
-      k8s_labels = {
-        "storageos-node" = "1"
-        "storageos-etcd" = "1"
       }
     }
   }
@@ -450,55 +381,21 @@ module "attached_ebs_three" {
     }
   }
 }
-module "attached_ebs_four" {
-  source = "github.com/ondat/etcd3-bootstrap//terraform/modules/attached_ebs?ref=v0.1.2"
 
-  group = join("-", [local.name, "ondat", "4"])
-  attached_ebs = {
-    "storageos-config-ondat-4" = {
-      size                    = 10
-      availability_zone       = data.aws_subnet.two.availability_zone
-      encrypted               = true
-      volume_type             = "gp3"
-      block_device_aws        = "/dev/xvdf"
-      block_device_os         = "/dev/nvme1n1"
-      block_device_mount_path = "/var/lib/storageos"
-    }
-    "storageos-data-ondat-4" = {
-      size                    = 100
-      availability_zone       = data.aws_subnet.two.availability_zone
-      encrypted               = true
-      volume_type             = "gp3"
-      block_device_aws        = "/dev/xvdg"
-      block_device_os         = "/dev/nvme2n1"
-      block_device_mount_path = "/var/lib/storageos/data/dev1"
-    }
-  }
-}
-module "attached_ebs_five" {
-  source = "github.com/ondat/etcd3-bootstrap//terraform/modules/attached_ebs?ref=v0.1.2"
+#---------------------------------------------------------------
+# Example to consume etcd3-terraform module
+#---------------------------------------------------------------
+module "etcd" {
+  source     = "github.com/ondat/etcd3-terraform?ref=v0.0.3"
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
 
-  group = join("-", [local.name, "ondat", "5"])
-  attached_ebs = {
-    "storageos-config-ondat-5" = {
-      size                    = 10
-      availability_zone       = data.aws_subnet.three.availability_zone
-      encrypted               = true
-      volume_type             = "gp3"
-      block_device_aws        = "/dev/xvdf"
-      block_device_os         = "/dev/nvme1n1"
-      block_device_mount_path = "/var/lib/storageos"
-    }
-    "storageos-data-ondat-5" = {
-      size                    = 100
-      availability_zone       = data.aws_subnet.three.availability_zone
-      encrypted               = true
-      volume_type             = "gp3"
-      block_device_aws        = "/dev/xvdg"
-      block_device_os         = "/dev/nvme2n1"
-      block_device_mount_path = "/var/lib/storageos/data/dev1"
-    }
-  }
+  ssd_size      = 32
+  instance_type = "t3.large"
+
+  client_cidrs = module.vpc.private_subnets_cidr_blocks # etcd access for private nodes
+  dns          = "gs-etcd.int"
+  environment  = "a"
 }
 
 #---------------------------------------------------------------
@@ -513,16 +410,14 @@ module "eks_blueprints_kubernetes_addons" {
   eks_cluster_version  = module.eks_blueprints.eks_cluster_version
 
   # EKS Addons
-  enable_amazon_eks_aws_ebs_csi_driver = true # used for etcd
-  enable_ondat                         = true # default is false
+  enable_ondat = true # default is false
 
   # Ondat addon configuration
   # ondat_create_cluster               = true                                   # whether to create the Ondat cluster
-  # ondat_etcd_endpoints               = []                                     # etcd cluster endpoints
-  # ondat_etcd_ca                      = ""                                     # etcd cluster CA (default autogenerated)
-  # ondat_etcd_cert                    = ""                                     # etcd cluster cert (default autogenerated)
-  # ondat_etcd_key                     = ""                                     # etcd cluster key (default autogenerated)
+  ondat_etcd_endpoints = ["https://${module.etcd.lb_address}:2379"]
+  ondat_etcd_ca        = module.etcd.ca_cert
+  ondat_etcd_cert      = module.etcd.client_cert
+  ondat_etcd_key       = module.etcd.client_key
   # ondat_admin_username               = "storageos"                            # ondat API username
   # ondat_admin_password               = "storageos"                            # ondat API password
-  # ondat_helm_config                  = {}                                     # additional/override Helm parameters
 }
