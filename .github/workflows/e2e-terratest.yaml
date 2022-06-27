@@ -26,6 +26,14 @@ jobs:
         with:
           go-version: 1.17
 
+      - name: Upgrade AWS CLI
+        run:  |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
+            unzip -q /tmp/awscliv2.zip -d /tmp
+            rm /tmp/awscliv2.zip
+            sudo /tmp/aws/install --update
+            rm -rf /tmp/aws/
+
       - name: Configure AWS credentials from Test account
         uses: aws-actions/configure-aws-credentials@v1
         with:
