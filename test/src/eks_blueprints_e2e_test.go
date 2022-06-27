@@ -28,7 +28,7 @@ var (
 		{
 			"getting-started",
 			"eu-west-2",
-			"aws-terra-test-eks",
+			"getting-started",
 			map[string]string{
 				"rootFolder":        "../..",
 				"exampleFolderPath": "blueprints/getting-started"},
@@ -53,8 +53,8 @@ var (
 		{"vpc_cidr", "10.0.0.0/16", "equal"},
 		{"vpc_private_subnet_cidr", "[10.0.10.0/24 10.0.11.0/24 10.0.12.0/24]", "equal"},
 		{"vpc_public_subnet_cidr", "[10.0.0.0/24 10.0.1.0/24 10.0.2.0/24]", "equal"},
-		{"eks_cluster_id", "aws-terra-test-eks", "equal"},
-		{"eks_managed_nodegroup_status", "[ACTIVE]", "equal"},
+		{"eks_cluster_id", "getting-started", "equal"},
+		{"eks_managed_nodegroup_status", "[ACTIVE ACTIVE ACTIVE ACTIVE ACTIVE]", "equal"},
 	}
 
 	/*EKS API Validation*/
@@ -62,10 +62,7 @@ var (
 
 	/*Update the expected Deployments names and the namespace*/
 	expectedDeployments = [...]Deployment{
-		{"aws-load-balancer-controller", "kube-system"},
-		{"cluster-autoscaler-aws-cluster-autoscaler", "kube-system"},
 		{"coredns", "kube-system"},
-		{"metrics-server", "kube-system"},
 		{"ondat-controller-manager", "ondat"},
 		{"ondat-ondat-operator", "ondat"},
 		{"ondat-proxy", "ondat"},
@@ -83,10 +80,8 @@ var (
 
 	/*Update the expected K8s Services names and the namespace*/
 	expectedServices = [...]Services{
-		{"cluster-autoscaler-aws-cluster-autoscaler", "kube-system", "ClusterIP"},
 		{"kube-dns", "kube-system", "ClusterIP"},
 		{"kubernetes", "default", "ClusterIP"},
-		{"metrics-server", "kube-system", "ClusterIP"},
 		{"ondat-proxy", "ondat", "ClusterIP"},
 		{"storageos-operator", "ondat", "ClusterIP"},
 		{"storageos-operator-webhook", "ondat", "ClusterIP"},
@@ -135,7 +130,7 @@ func TestEksBlueprintsE2E(t *testing.T) {
 				/*The path to where our Terraform code is located*/
 				TerraformDir: tempExampleFolder,
 				Vars: map[string]interface{}{
-					"cluster_name": "aws-terra-test-eks",
+					"cluster_name": testCase.values["eks_cluster"],
 				},
 				// VarFiles:     []string{testCase.name + ".tfvars"}, // The var file paths to pass to Terraform commands using -var-file option.
 				//BackendConfig: map[string]interface{}{
@@ -156,7 +151,7 @@ func TestEksBlueprintsE2E(t *testing.T) {
 							/*The path to where our Terraform code is located*/
 							TerraformDir: tempExampleFolder,
 							Vars: map[string]interface{}{
-								"cluster_name": "aws-terra-test-eks",
+								"cluster_name": testCase.values["eks_cluster"],
 							},
 							// VarFiles:     []string{testCase.name + ".tfvars"}, // The var file paths to pass to Terraform commands using -var-file option.
 							//BackendConfig: map[string]interface{}{
