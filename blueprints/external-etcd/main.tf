@@ -1,5 +1,5 @@
 provider "aws" {
-  region = local.region
+  region = var.aws_region
 }
 
 provider "kubernetes" {
@@ -28,10 +28,7 @@ provider "helm" {
 }
 
 data "aws_caller_identity" "current" {}
-
 data "aws_availability_zones" "available" {}
-
-data "aws_partition" "current" {}
 
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -58,18 +55,9 @@ data "aws_subnet" "three" {
   id = module.vpc.private_subnets[2]
 }
 
-data "aws_eks_cluster" "cluster" {
-  name = module.eks_blueprints.eks_cluster_id
-}
-
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks_blueprints.eks_cluster_id
-}
-
 locals {
   name            = basename(path.cwd)
   cluster_version = "1.22"
-  region          = var.aws_region
 
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -212,13 +200,11 @@ module "vpc" {
   default_security_group_tags   = { Name = "${local.name}-default" }
 
   public_subnet_tags = {
-    "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/elb"              = "1"
+    "kubernetes.io/role/elb" = "1"
   }
 
   private_subnet_tags = {
-    "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/internal-elb"     = "1"
+    "kubernetes.io/role/internal-elb" = "1"
   }
 
   tags = local.tags
@@ -228,7 +214,7 @@ module "vpc" {
 # Example to consume eks_blueprints module
 #---------------------------------------------------------------
 module "eks_blueprints" {
-  source          = "github.com/aws-ia/terraform-aws-eks-blueprints"
+  source          = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.12.1"
   cluster_name    = local.name
   cluster_version = local.cluster_version
 
@@ -331,6 +317,7 @@ module "attached_ebs_one" {
     }
   }
 }
+
 module "attached_ebs_two" {
   source = "github.com/ondat/etcd3-bootstrap//terraform/modules/attached_ebs?ref=v0.1.2"
 
@@ -356,6 +343,7 @@ module "attached_ebs_two" {
     }
   }
 }
+
 module "attached_ebs_three" {
   source = "github.com/ondat/etcd3-bootstrap//terraform/modules/attached_ebs?ref=v0.1.2"
 
@@ -402,7 +390,7 @@ module "etcd" {
 # Example to consume eks_blueprints_kubernetes_addons module
 #---------------------------------------------------------------
 module "eks_blueprints_kubernetes_addons" {
-  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons"
+  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=v4.12.1"
 
   eks_cluster_id       = module.eks_blueprints.eks_cluster_id
   eks_cluster_endpoint = module.eks_blueprints.eks_cluster_endpoint
