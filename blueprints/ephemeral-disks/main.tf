@@ -238,7 +238,7 @@ module "vpc" {
 # Example to consume eks_blueprints module
 #---------------------------------------------------------------
 module "eks_blueprints" {
-  source = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.12.1"
+  source = "github.com/aws-ia/terraform-aws-eks-blueprints"
 
   cluster_name    = local.name
   cluster_version = local.cluster_version
@@ -481,7 +481,7 @@ module "attached_ebs_five" {
 # Example to consume eks_blueprints_kubernetes_addons module
 #---------------------------------------------------------------
 module "eks_blueprints_kubernetes_addons" {
-  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=v4.12.1"
+  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons"
 
   eks_cluster_id       = module.eks_blueprints.eks_cluster_id
   eks_cluster_endpoint = module.eks_blueprints.eks_cluster_endpoint
