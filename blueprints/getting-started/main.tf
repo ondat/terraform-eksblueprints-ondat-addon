@@ -1,5 +1,5 @@
 provider "aws" {
-  region = local.region
+  region = var.aws_region
 }
 
 provider "kubernetes" {
@@ -28,10 +28,7 @@ provider "helm" {
 }
 
 data "aws_caller_identity" "current" {}
-
 data "aws_availability_zones" "available" {}
-
-data "aws_partition" "current" {}
 
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -58,18 +55,9 @@ data "aws_subnet" "three" {
   id = module.vpc.private_subnets[2]
 }
 
-data "aws_eks_cluster" "cluster" {
-  name = module.eks_blueprints.eks_cluster_id
-}
-
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks_blueprints.eks_cluster_id
-}
-
 locals {
   name            = basename(path.cwd)
   cluster_version = "1.22"
-  region          = var.aws_region
 
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -236,13 +224,11 @@ module "vpc" {
   default_security_group_tags   = { Name = "${local.name}-default" }
 
   public_subnet_tags = {
-    "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/elb"              = "1"
+    "kubernetes.io/role/elb" = "1"
   }
 
   private_subnet_tags = {
-    "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/internal-elb"     = "1"
+    "kubernetes.io/role/internal-elb" = "1"
   }
 
   tags = local.tags
@@ -400,6 +386,7 @@ module "attached_ebs_one" {
     }
   }
 }
+
 module "attached_ebs_two" {
   source = "github.com/ondat/etcd3-bootstrap//terraform/modules/attached_ebs?ref=v0.1.2"
 
@@ -425,6 +412,7 @@ module "attached_ebs_two" {
     }
   }
 }
+
 module "attached_ebs_three" {
   source = "github.com/ondat/etcd3-bootstrap//terraform/modules/attached_ebs?ref=v0.1.2"
 
@@ -450,6 +438,7 @@ module "attached_ebs_three" {
     }
   }
 }
+
 module "attached_ebs_four" {
   source = "github.com/ondat/etcd3-bootstrap//terraform/modules/attached_ebs?ref=v0.1.2"
 
@@ -475,6 +464,7 @@ module "attached_ebs_four" {
     }
   }
 }
+
 module "attached_ebs_five" {
   source = "github.com/ondat/etcd3-bootstrap//terraform/modules/attached_ebs?ref=v0.1.2"
 
